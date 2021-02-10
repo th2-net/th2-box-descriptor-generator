@@ -29,7 +29,6 @@ ext {
 
 group 'com.exactpro.th2'
 version release_version
-archivesBaseName = 'th2-gradle-plugin'
 
 allprojects {
     dependencies {
@@ -93,17 +92,17 @@ static def getDate() {
     return formattedDate
 }
 
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: classes) {
-    classifier = 'javadoc'
-    from javadoc
-}
-
-artifacts {
-    archives sourcesJar, javadocJar
-}
+//
+//task sourcesJar(type: Jar, dependsOn: classes) {
+//    classifier = 'sources'
+//    from sourceSets.main.allSource
+//}
+//
+//task javadocJar(type: Jar, dependsOn: classes) {
+//    classifier = 'javadoc'
+//    from javadoc
+//}
+//
+//artifacts {
+//    archives sourcesJar, javadocJar
+//}
