@@ -21,10 +21,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Parameters {
-    private String outputDirectory = ".";
-    private String fileName = "serviceProtoDescription.json";
-    private Set<String> namePatterns = Collections.emptySet();
-    private Set<String> configurationTypes = new HashSet<>() {{
+    String outputDirectory = ".";
+    String fileName = "serviceProtoDescription.json";
+    Set<String> namePatterns = Collections.emptySet();
+    Set<String> configurationTypes = new HashSet<>() {{
         add("implementation");
     }};
 
@@ -63,7 +63,7 @@ public class Parameters {
     @Override
     public String toString() {
         return "Parameters{" +
-                "outputDirectory='" + outputDirectory + '\'' +
+                "targetDirectory='" + outputDirectory + '\'' +
                 ", fileName='" + fileName + '\'' +
                 ", namePatterns=" + namePatterns +
                 ", configurationTypes=" + configurationTypes +

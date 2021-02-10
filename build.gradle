@@ -14,7 +14,6 @@
  * limitations under the License.
  ******************************************************************************/
 
-
 plugins {
     id 'groovy'
     id 'maven-publish'
@@ -22,8 +21,15 @@ plugins {
     id 'java-gradle-plugin'
 }
 
+ext {
+    sharedDir = file("${project.rootDir}/shared")
+    OWNER = "th2-net"
+    REPOSITORY = "th2-gradle-plugin"
+}
+
 group 'com.exactpro.th2'
 version release_version
+archivesBaseName = 'th2-gradle-plugin'
 
 allprojects {
     dependencies {
@@ -32,7 +38,10 @@ allprojects {
 }
 
 repositories {
-    mavenLocal()
+    maven {
+        name 'MavenLocal' // for local builds only
+        url sharedDir
+    }
     jcenter()
 }
 
@@ -41,11 +50,60 @@ dependencies {
     compile gradleApi()
 }
 
-gradlePlugin {
-    plugins {
-        th2plugin {
-            id = "th2plugin"
-            implementationClass = "com.exactpro.th2.Th2Plugin"
+
+jar {
+    manifest {
+        attributes(
+                'Created-By': "${System.getProperty('java.version')} (${System.getProperty('java.vendor')})",
+                'Specification-Title': '',
+                'Specification-Vendor': 'Exactpro Systems LLC',
+                'Implementation-Title': project.archivesBaseName,
+                'Implementation-Vendor': 'Exactpro Systems LLC',
+                'Implementation-Vendor-Id': 'com.exactpro',
+                'Implementation-Version': project.version,
+                'Implementation-Version-Date': getDate()
+        )
+    }
+}
+
+publishing {
+    publishing {
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/${OWNER}/${REPOSITORY}")
+                credentials {
+                    username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                    password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+                }
+            }
+        }
+        publications {
+            gpr(MavenPublication) {
+                from(components.java)
+            }
         }
     }
+}
+
+
+static def getDate() {
+    def date = new Date()
+    def formattedDate = date.format('yyyyMMdd-HH:mm:ss.SSS')
+    return formattedDate
+}
+
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: classes) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+artifacts {
+    archives sourcesJar, javadocJar
 }

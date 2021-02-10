@@ -14,11 +14,24 @@ Config example (with default values):
 ``` 
 apply plugin: 'th2plugin'
 
-parameters {
+th2parameters {
     targetDirectory = "."
     fileName = "serviceProtoDescription.json"
     configurationTypes = ["implementation"]
     namePatterns = []
 }
 
+```
+
+Plugin must be applied outside of the build process before all other plugins, for example.
+```
+tasks.matching { it.name != 'generateServiceDescriptions' }.all { Task task ->
+    task.dependsOn generateServiceDescriptions
+}
+```
+
+Or before 'build' command
+
+```
+gradle generateServiceDescriptions clean build
 ```

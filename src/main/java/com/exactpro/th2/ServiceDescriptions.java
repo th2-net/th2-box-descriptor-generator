@@ -33,16 +33,17 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 public class ServiceDescriptions extends DefaultTask {
-    private final Logger LOGGER = getProject().getLogger();
+    private Logger LOGGER;
     private static final String PARAMETERS = "parameters";
     private static final String PROTO_FILE = ".proto";
     private Parameters parameters;
-    private final boolean isNamesEmpty;
-    private final Set<String> configurationTypes;
-    private final Set<String> namesPatterns;
+    private boolean isNamesEmpty;
+    private Set<String> configurationTypes;
+    private Set<String> namesPatterns;
     private static final ObjectMapper jacksonMapper = new ObjectMapper();
 
-    public ServiceDescriptions() {
+    private void configure() {
+        LOGGER = getProject().getLogger();
         parameters = (Parameters) getProject().getExtensions().findByName(PARAMETERS);
         if (parameters == null) {
             parameters = new Parameters();
@@ -51,12 +52,13 @@ public class ServiceDescriptions extends DefaultTask {
         isNamesEmpty = parameters.getNamePatterns().isEmpty();
         configurationTypes = parameters.getConfigurationTypes();
         namesPatterns = parameters.getNamePatterns();
+        LOGGER.debug(parameters.toString());
     }
 
-    private boolean matchName(String pattern) {
+    private boolean matchName(String name) {
         return isNamesEmpty ||
                 namesPatterns.stream()
-                        .anyMatch(name -> name.toLowerCase().contains(pattern.toLowerCase()));
+                        .anyMatch(pattern -> name.toLowerCase().contains(pattern.toLowerCase()));
     }
 
     private Set<File> getDependenciesFiles(final Project project) {
@@ -148,6 +150,7 @@ public class ServiceDescriptions extends DefaultTask {
 
     @TaskAction
     public void action() {
+        configure();
         Project project = getProject();
         Set<File> dependencyFiles = getDependenciesFiles(project);
         Map<String, Map<String, String>> jarToAllProto = new HashMap<>();
