@@ -22,9 +22,6 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleScriptException;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ConfigurationContainer;
-import org.gradle.api.artifacts.Dependency;
-import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.tasks.TaskAction;
 import org.slf4j.Logger;
 
@@ -62,15 +59,6 @@ public class ServiceDescriptions extends DefaultTask {
                         .anyMatch(name -> name.toLowerCase().contains(pattern.toLowerCase()));
     }
 
-    private Set<Dependency> getDependencies(final Project project) {
-        return project.getConfigurations().stream()
-                .filter(conf -> configurationTypes.contains(conf.getName()))
-                .map(Configuration::getAllDependencies)
-                .flatMap(DependencySet::stream)
-                .filter(dependency -> matchName(dependency.getName()))
-                .collect(Collectors.toSet());
-    }
-
     private Set<File> getDependenciesFiles(final Project project) {
         var configurations = project.getConfigurations().stream()
                 .filter(conf -> configurationTypes.contains(conf.getName()))
@@ -87,26 +75,6 @@ public class ServiceDescriptions extends DefaultTask {
                         dependencySet.add(file);
                     }
                 });
-            } catch (Exception ex) {
-                project.getLogger().error("Cannot process configuration  " + configuration.getName(), ex);
-            }
-        }
-        return dependencySet;
-    }
-
-    private Set<File> getDependenciesFilesAlter(final Project project) {
-        ConfigurationContainer configurations = project.getConfigurations();
-
-        Set<File> dependencySet = new HashSet<>();
-        for (Configuration configuration : configurations) {
-            try {
-                if (configuration.isCanBeResolved()) {
-                    configuration.forEach(file -> {
-                        if (matchName(file.getName())) {
-                            dependencySet.add(file);
-                        }
-                    });
-                }
             } catch (Exception ex) {
                 project.getLogger().error("Cannot process configuration  " + configuration.getName(), ex);
             }
@@ -156,7 +124,7 @@ public class ServiceDescriptions extends DefaultTask {
     }
 
     private void writeToFile(String jsonString) {
-        File outputDir = new File(parameters.getTargetDirectory());
+        File outputDir = new File(parameters.getOutputDirectory());
         if (!outputDir.exists() && !outputDir.mkdirs()) {
             LOGGER.error("Cannot create directory " + outputDir.getAbsolutePath());
             throw new GradleScriptException("Cannot create directory " + outputDir.getAbsolutePath(), null);
@@ -171,10 +139,10 @@ public class ServiceDescriptions extends DefaultTask {
         } catch (IOException e) {
             LOGGER.error(String.format("Cannot write to json file: '%s' path: '%s'",
                     parameters.getFileName(),
-                    parameters.getTargetDirectory()), e);
+                    parameters.getOutputDirectory()), e);
             throw new GradleScriptException(String.format("Cannot write to json file: '%s' path: '%s'",
                     parameters.getFileName(),
-                    parameters.getTargetDirectory()), e);
+                    parameters.getOutputDirectory()), e);
         }
     }
 

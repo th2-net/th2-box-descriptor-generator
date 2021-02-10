@@ -2,7 +2,7 @@
 
 ### Plugin configuration
 
-`targetDirectory` - directory for writing the final file. Default `.`
+`outputDirectory` - directory for writing the final file. Default `.`
 
 `fileName` - name of final file. Default `serviceProtoDescription.json`
 
