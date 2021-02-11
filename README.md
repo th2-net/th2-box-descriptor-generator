@@ -2,6 +2,8 @@
 
 ### Plugin configuration
 
+###important: all .proto files must contain 'package' field. As example 'package th2;'
+
 `outputDirectory` - directory for writing the final file. Default `.`
 
 `fileName` - name of final file. Default `serviceProtoDescription.json`
@@ -19,7 +21,7 @@ buildscript {
             url = uri("https://maven.pkg.github.com/th2-net/th2-gradle-plugin")
         }
         dependencies {
-            classpath "com.exactpro.th2:th2-gradle-plugin:0.1.5"
+            classpath "com.exactpro.th2:th2-gradle-plugin:0.1.6"
         }
     }
 }
