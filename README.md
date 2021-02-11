@@ -10,11 +10,23 @@
 
 `namePatterns` - set of substrings that will be checked when searching for jar files. If empty then match all files. Default `[]`
 
-Config example (with default values): 
+build.gradle example (with default values): 
 ``` 
+buildscript {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/th2-net/th2-gradle-plugin")
+        }
+        dependencies {
+            classpath "com.exactpro.th2:th2-gradle-plugin:0.1.5"
+        }
+    }
+}
+
 apply plugin: 'th2plugin'
 
-th2parameters {
+parameters {
     targetDirectory = "."
     fileName = "serviceProtoDescription.json"
     configurationTypes = ["implementation"]
@@ -23,7 +35,7 @@ th2parameters {
 
 ```
 
-Plugin must be applied outside of the build process before all other plugins, for example.
+the plugin should be applied as a separate task outside of the build tasks or before all other plugins, for example.
 ```
 tasks.matching { it.name != 'generateServiceDescriptions' }.all { Task task ->
     task.dependsOn generateServiceDescriptions
