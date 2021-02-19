@@ -2,7 +2,7 @@
 
 ### Plugin configuration
 
-###important: all .proto files must contain 'package' field. As example 'package th2;'
+.proto files should contain 'package' field. As example 'package th2;'
 
 `outputDirectory` - directory for writing the final file. Default `.`
 
@@ -30,14 +30,14 @@ apply plugin: 'th2plugin'
 
 parameters {
     targetDirectory = "."
-    fileName = "serviceProtoDescription.json"
+    fileName = "serviceProtoDescription"
     configurationTypes = ["implementation"]
     namePatterns = []
 }
 
 ```
 
-the plugin should be applied as a separate task outside of the build tasks or before all other plugins, for example.
+the plugin should be applied as a separate task outside of the build tasks or before all other plugins, for example:
 ```
 tasks.matching { it.name != 'generateServiceDescriptions' }.all { Task task ->
     task.dependsOn generateServiceDescriptions

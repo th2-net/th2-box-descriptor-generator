@@ -22,7 +22,7 @@ import java.util.Set;
 
 public class Parameters {
     String outputDirectory = ".";
-    String fileName = "serviceProtoDescription.json";
+    String fileName = "serviceProtoDescription";
     Set<String> namePatterns = Collections.emptySet();
     Set<String> configurationTypes = new HashSet<>() {{
         add("implementation");

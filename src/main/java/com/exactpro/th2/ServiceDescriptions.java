@@ -148,6 +148,10 @@ public class ServiceDescriptions extends DefaultTask {
         }
     }
 
+    private String convertToBase64(String jsonString) {
+        return Base64.getEncoder().encodeToString(jsonString.getBytes());
+    }
+
     @TaskAction
     public void action() {
         configure();
@@ -162,6 +166,7 @@ public class ServiceDescriptions extends DefaultTask {
                 }
         );
         String jsonString = convertToJson(jarToAllProto);
-        writeToFile(jsonString);
+        String jsonStringBase64 = convertToBase64(jsonString);
+        writeToFile(jsonStringBase64);
     }
 }
