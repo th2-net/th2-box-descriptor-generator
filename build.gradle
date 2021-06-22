@@ -53,8 +53,8 @@ repositories {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    compile gradleApi()
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    implementation  gradleApi()
 }
 
 
