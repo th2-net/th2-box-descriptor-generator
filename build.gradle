@@ -19,6 +19,9 @@ plugins {
     id 'maven-publish'
     id 'java'
     id 'java-gradle-plugin'
+    id "io.github.gradle-nexus.publish-plugin" version "1.0.0"
+    id 'signing'
+    id 'java-library'
 }
 
 ext {
@@ -37,11 +40,16 @@ allprojects {
 }
 
 repositories {
+    mavenCentral()
+
     maven {
-        name 'MavenLocal' // for local builds only
-        url sharedDir
+        name 'Sonatype_snapshots'
+        url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
     }
-    jcenter()
+    maven {
+        name 'Sonatype_releases'
+        url 'https://s01.oss.sonatype.org/content/repositories/releases/'
+    }
 }
 
 dependencies {
@@ -65,21 +73,6 @@ jar {
     }
 }
 
-
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/${OWNER}/${REPOSITORY}")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-}
-
-
 static def getDate() {
     def date = new Date()
     def formattedDate = date.format('yyyyMMdd-HH:mm:ss.SSS')
@@ -87,16 +80,121 @@ static def getDate() {
 }
 
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+//task sourcesJar(type: Jar, dependsOn: classes) {
+//    classifier = 'sources'
+//    from sourceSets.main.allSource
+//}
+//
+//task javadocJar(type: Jar, dependsOn: classes) {
+//    classifier = 'javadoc'
+//    from javadoc
+//}
+//
+//artifacts {
+//    archives sourcesJar, javadocJar
+//}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
-task javadocJar(type: Jar, dependsOn: classes) {
-    classifier = 'javadoc'
-    from javadoc
+javadoc {
+    (options as StandardJavadocDocletOptions).addBooleanOption("html5", true)
 }
 
-artifacts {
-    archives sourcesJar, javadocJar
+// conditionals for publications
+tasks.withType(PublishToMavenRepository) {
+    onlyIf {
+        (repository == publishing.repositories.nexusRepository &&
+                project.hasProperty('nexus_user') &&
+                project.hasProperty('nexus_password') &&
+                project.hasProperty('nexus_url')) ||
+                (repository == publishing.repositories.sonatype &&
+                        project.hasProperty('sonatypeUsername') &&
+                        project.hasProperty('sonatypePassword')) ||
+                (repository == publishing.repositories.localRepo)
+    }
+}
+tasks.withType(Sign) {
+    onlyIf { project.hasProperty('signingKey') &&
+            project.hasProperty('signingPassword')
+    }
+}
+// disable running task 'initializeSonatypeStagingRepository' on a gitlab
+tasks.whenTaskAdded {task ->
+    if(task.name.equals('initializeSonatypeStagingRepository') &&
+            !(project.hasProperty('sonatypeUsername') && project.hasProperty('sonatypePassword'))
+    ) {
+        task.enabled = false
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from(components.java)
+            artifact("$buildDir/artifacts/${project.name}" as File) {
+                classifier "all"
+                extension "jar"
+                builtBy jar
+            }
+            pom {
+                name = rootProject.name
+                packaging = 'jar'
+                description = rootProject.description
+                url = vcs_url
+                scm {
+                    url = vcs_url
+                }
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'developer'
+                        name = 'developer'
+                        email = 'developer@exactpro.com'
+                    }
+                }
+                scm {
+                    url = vcs_url
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = 'localRepo'
+            url = sharedDir
+        }
+//Nexus repo to publish from gitlab
+        maven {
+            name = 'nexusRepository'
+            credentials {
+                username = project.findProperty('nexus_user')
+                password = project.findProperty('nexus_password')
+            }
+            url = project.findProperty('nexus_url')
+        }
+    }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}
+
+signing {
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.mavenJava
 }
