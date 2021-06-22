@@ -59,6 +59,7 @@ dependencies {
 
 
 jar {
+    
     manifest {
         attributes(
                 'Created-By': "${System.getProperty('java.version')} (${System.getProperty('java.vendor')})",
@@ -71,6 +72,8 @@ jar {
                 'Implementation-Version-Date': getDate()
         )
     }
+    archiveFileName = project.name
+    destinationDirectory = "$buildDir/artifacts" as File
 }
 
 static def getDate() {
