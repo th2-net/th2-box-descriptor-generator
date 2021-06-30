@@ -22,7 +22,7 @@ buildscript {
             url = uri("https://maven.pkg.github.com/th2-net/th2-gradle-plugin")
         }
         dependencies {
-            classpath "com.exactpro.th2:th2-gradle-plugin:0.1.6"
+            classpath "com.exactpro.th2:box-descriptor-generator:0.1.6"
         }
     }
 }
@@ -36,7 +36,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "com.exactpro.th2:th2-gradle-plugin:0.1.7-sonatype_publish-961396305-SNAPSHOT"
+        classpath "com.exactpro.th2:box-descriptor-generator:0.1.8-sonatype_publish-985900696-SNAPSHOT"
     }
 }
 
