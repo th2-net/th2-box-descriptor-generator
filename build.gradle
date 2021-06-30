@@ -72,8 +72,6 @@ jar {
                 'Implementation-Version-Date': getDate()
         )
     }
-    archiveFileName = project.name
-    destinationDirectory = "$buildDir/artifacts" as File
 }
 
 static def getDate() {
@@ -122,11 +120,6 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from(components.java)
-            artifact("$buildDir/artifacts/${project.name}" as File) {
-                classifier "all"
-                extension "jar"
-                builtBy jar
-            }
             pom {
                 name = rootProject.name
                 packaging = 'jar'
