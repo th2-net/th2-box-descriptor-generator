@@ -72,8 +72,6 @@ jar {
                 'Implementation-Version-Date': getDate()
         )
     }
-    archiveFileName = project.name
-    destinationDirectory = "$buildDir/artifacts" as File
 }
 
 static def getDate() {
