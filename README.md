@@ -14,6 +14,7 @@
 
 build.gradle example (with default values): 
 ``` 
+When installed from github artifacts (obsolete):
 buildscript {
     repositories {
         maven {
@@ -26,13 +27,26 @@ buildscript {
     }
 }
 
+When installed from Sonatype (actual):
+buildscript {
+    repositories {
+        maven {
+            name 'Sonatype_snapshots'
+            url 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+        }
+    }
+    dependencies {
+        classpath "com.exactpro.th2:th2-gradle-plugin:0.1.7-sonatype_publish-961396305-SNAPSHOT"
+    }
+}
+
 apply plugin: 'th2plugin'
 
 parameters {
-    targetDirectory = "."
+    outputDirectory = "."
     fileName = "serviceProtoDescription"
     configurationTypes = ["implementation"]
-    namePatterns = []
+    namePatterns = ["grpc"]
 }
 
 ```

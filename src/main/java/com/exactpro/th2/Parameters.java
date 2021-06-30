@@ -63,7 +63,7 @@ public class Parameters {
     @Override
     public String toString() {
         return "Parameters{" +
-                "targetDirectory='" + outputDirectory + '\'' +
+                "outputDirectory='" + outputDirectory + '\'' +
                 ", fileName='" + fileName + '\'' +
                 ", namePatterns=" + namePatterns +
                 ", configurationTypes=" + configurationTypes +
