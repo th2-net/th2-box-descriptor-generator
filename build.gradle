@@ -17,7 +17,6 @@
 plugins {
     id 'maven-publish'
     id 'java'
-    id 'java-gradle-plugin'
     id "io.github.gradle-nexus.publish-plugin" version "1.0.0"
     id 'signing'
     id 'java-library'
@@ -26,8 +25,6 @@ plugins {
 
 ext {
     sharedDir = file("${project.rootDir}/shared")
-    OWNER = "th2-net"
-    REPOSITORY = "th2-gradle-plugin"
 }
 
 group 'com.exactpro.th2'
